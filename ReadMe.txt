@@ -1,4 +1,5 @@
-https://www.youtube.com/watch?v=ksTTlXNLick&t=319s
+﻿https://www.youtube.com/watch?v=ksTTlXNLick&t=319s
+https://www.youtube.com/watch?v=60UsHHsKyN4
 
 01) Schema-less JSON documents (like NoSQL DBs)
 02) Communication with search server done through HTTP REST API (.NET has client SDK)
@@ -25,7 +26,7 @@ https://www.youtube.com/watch?v=ksTTlXNLick&t=319s
 	creating an index. Allows to scale horizontally by content volumne (index space). Allows to distribute and parallelize operations across shards, which increases performance.
 11) Replicas: is a copy of a shard. Provides high availability in case a shard or node fails. A replica never resides on the same node as the original shard. Allows
 	scaling search volume, because search queries can be executed on all replicas in parallel. By default, Elasticsearch adds 5 primary shards and 1 replica for each index.
-12) Look into Sense which is a web plugin that helps issue Elasticsearch REST requests
+12) Look into Sense which is a web plugin that helps issue Elasticsearch REST requests. https://www.found.no/foundation/Sense-Elasticsearch-interface﻿
 13) Look into Kibana which looks like a web plugin that helps you view details of your index, document, etc. Helps you do quick searches into documents
 14) Elasticsearch doesn't have an array type, when adding a mapping, even if you know it's an array you specify as normal field. Elasticsearch will automatically store
 	data as "array" when sent in.
@@ -50,8 +51,8 @@ https://www.youtube.com/watch?v=ksTTlXNLick&t=319s
 	Queries in filter context do not affect the scores of matching documents. "Dos the document match"
 19) Query string search: search by sending parameters through the REST request URI. Used for simple queries and ad-hoc queries on the command line. Also supports
 	advanced queries. GET http://localhost:9200/ecommerce/product/_search?q=pasta
-20) Query DSL: search by defining queries within the request body in JSON. Supports more features than the query sring approach. Used for more advanced queries.
-	Often easier to read, as queries are defined in JSON. 
+20) Query DSL (Domain Specific Language): search by defining queries within the request body in JSON. Supports more features than the query sring approach. 
+	Used for more advanced queries. Often easier to read, as queries are defined in JSON. 
 	GET http://localhost:9200/ecommerce/product/_search
 	{
 		"query": {
@@ -82,5 +83,158 @@ https://www.youtube.com/watch?v=ksTTlXNLick&t=319s
 	Search in specific field for pasta and not spaghetti: GET /ecommerce/product/_search?q=name:+pasta -spaghetti
 	Search in specific field, defaults to OR: GET /ecommerce/product/_search?q=name:pasta spaghetti
 	Search in specific field, now both must match and in that order, will match even if "-" between match: GET /ecommerce/product/_search?q=name:"pasta spaghetti"
+27) DSL examples:
+	Get all restaurant:	
+	POST http://localhost:9200/places/restaurant/_search	
+	{
+		"query": {
+			"match_all":{}
+		}
+	}
 
+	Get all types in index:	
+	POST http://localhost:9200/places/_search
+	{
+		"query": {
+			"match_all":{}
+		}
+	}
 
+	Get restaurants matching tacos in all fields:	
+	POST http://localhost:9200/places/restaurant/_search
+	{
+		"query": {
+			"query_string":{
+				"query":"tacos"
+			}
+		}
+	}
+
+	Get restaurants matching tacos in tags field:	
+	POST http://localhost:9200/places/restaurant/_search
+	{
+		"query": {
+			"query_string":{
+				"query":"tacos",
+				"fields":["tags"]
+			}
+		}
+	}
+
+	Get restaurants matching tacos in tags field with filter:	
+	POST http://localhost:9200/places/restaurant/_search
+	{
+		"query": {
+			"filtered": {
+				"filter":{
+					"range":{
+						"rating":{
+							"gte":4.0
+						}
+					}
+				},				
+				"query_string":{
+					"query":"tacos",
+					"fields":["tags"]
+				}
+			}
+		}
+	}
+
+	Get restaurants with just filter:	
+	POST http://localhost:9200/places/restaurant/_search
+	{
+		"query": {
+			"filtered": {
+				"filter":{
+					"range":{
+						"rating":{
+							"gte":4.0
+						}
+					}
+				}
+			}
+		}
+	}
+
+	Get restaurants in NY with filter:	
+	POST http://localhost:9200/places/restaurant/_search
+	{
+		"query": {
+			"filtered": {
+				"filter":{
+					"range":{
+						"rating":{
+							"gte":4.0
+						}
+					}
+				},				
+				"query":{
+					"match": {
+						"address.state": "ny"
+					}
+				}
+			}
+		}
+	}
+
+	Get specific geo location:	
+	POST http://localhost:9200/places/restaurant/_search
+	{
+		"query": {
+			"filtered": {
+				"filter":{
+					"geo_distance": {
+						"distance": "100km",
+						"location": [40.7894537,-739481288]
+					}
+				}
+			}
+		}
+	}
+
+	Get specific geo location and rating match (must, mustnot, should):	
+	POST http://localhost:9200/places/restaurant/_search
+	{
+		"query": {
+			"filtered": {
+				"filter":{
+					"bool": {
+						"must": [
+							{
+								"range": {
+									"rating": {
+										"gte": "4.0"
+									}
+								}
+							},
+							{
+								"geo_distance": {
+									"distance": "100km",
+									"location": [40.7894537,-739481288]
+								}
+							}
+						]					
+					}
+				}
+			}
+		}
+	}
+28) Use synonyms to resolve issue where state input could be NY, New York, or Big Apple. Set up synonyms.txt in the Elasticsearch config folder. On each like type
+	in terms for synonyms (ny,new your, big apple on one row, ca, california, socal, norcal on next row). When you build your index pass in JSON object with
+	settings and mappings. The text file synonyms.txt will be noted in the JSON object. This is where you would specify that your location field is of type geo_point
+	for geospatial lookups.
+29) To get a simple count result:
+	POST http://localhost:9200/places/restaurant/_count
+	{
+		"query": {
+			"match_all":{}
+		}
+	}
+30) To specify pagination use size and from (you'll get total in response as well so you don't have to do a count to get that):
+	POST http://localhost:9200/places/restaurant/_search?size=2&from=0 
+	{
+		"query": {
+			"match_all":{}
+		}
+	}
