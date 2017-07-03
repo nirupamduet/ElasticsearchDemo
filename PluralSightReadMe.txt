@@ -20,6 +20,9 @@
 					"post_date": {
 						"type": "date",
 						"format": "YYYY-MM-DD"
+					},
+					"post_word_count": {
+						"type": "integer"
 					}
 				}	
 			}
@@ -105,7 +108,136 @@
 	}
 13) Get by alias
 	GET http://localhost:9200/eventLog/event/_search?q=event:error
+14) The highest score will come first, Elasticsearch will return the results ordered by score
+15) Query to match wonderful or blog
+	GET my_blog/post/_search
+	{
+	  "query": {
+		"match": {
+		 "post_text": "wonderful blog"
+		}
+	  }
+	}
+16) Query match phrase, finds exact phrases, good for full text searching, more predictable results, will match "wonderful blog" not "blog wonderful"
+	GET my_blog/post/_search
+	{
+	  "query": {
+		"match_phrase": {
+		 "post_text": "wonderful blog"
+		}
+	  }
+	}
+17) Adding filter to query:
+	{
+		"query": {
+			"filtered": {
+				"filter": {
+					"range": {
+						"post_date": {
+							"gt": "2014-10-18"
+						}
+					}
+				},
+				"query": {
+					"match": {
+						"post_text": "wonderful blog"
+					}
+				}
+			}
+		}
+	}
+18) Highlighting: will return HTML in highlight field with <em> tags around matched term 
+	GET my_blog/post/_search
+	{
+	  "query": {
+		"match": {
+		 "post_text": "writing"
+		}
+	  },
+	  "highlight": {
+		"fields": {
+		  "post_text": {}
+		}
+	  }
+	}
+19) Elasticsearch Analytics: aggregations, like GROUP BY but a lot better. Can do hierarchical rollups, min/max, percentiles, histograms, calculating the distance between
+	geographical points...TONS of built in aggregations.
+	GET my_blog/post/_search
+	{
+	  "query": {
+		"match": {
+		 "post_text": "writing"
+		}
+	  },
+	  "aggs": {
+		"all_words":{
+		  "terms": {
+			"field": "post_text"
+		  }
+		}
+	  }
+	}
 
+	GET my_blog/post/_search
+	{
+	  "query": {
+		"match": {
+		 "post_text": "writing"
+		}
+	  },
+	  "aggs": {
+		"avg_word_count":{
+		  "avg": {
+			"field": "post_word_count"
+		  }
+		}
+	  }
+	}
+20) Analysis and Analyzers: Tokens are words of complete string. Character filter. Remove html, convert "9" to "nine". Tokenize by whitespace, period, comma, etc.
+	Toke filter to remove stop words like "and" or "the". Comes with a lot of built-in analyzers. You can even make your own. The standard (default) analyzer is good general
+	purpose analyzer for multiple languages. Breaks up text strings by natural word boundaries, takes away punctuation, and lower-cases terms. The whitespace analyzer breaks
+	up text by whitespace only. More useful for strings like computer code or logs. The simple analyzer breaks up strings by anything that isn't a number, lowercases terms.
+	
+	{
+		"mappings": {
+			"post": {
+				"properties": {
+					"user_id": {
+						"type": "integer"						
+					},
+					"post_text": {
+						"type": "text",
+						"analyzer": "standard"
+					},
+					"post_date": {
+						"type": "date"						
+					}
+				}	
+			}
+		}
+	}
 
-
+	GET _analyze
+	{
+	  "analyzer": "standard",
+	  "text": "Convert the title-case text using the ToLower(string) command."
+	}
+	GET _analyze
+	{
+	  "analyzer" : "standard",
+	  "text" : ["this is a test", "the second text"]
+	}
+	GET _analyze
+	{
+	  "tokenizer" : "keyword",
+	  "filter" : ["lowercase"],
+	  "text" : "this is a test"
+	}
+	GET _analyze
+	{
+	  "tokenizer" : "keyword",
+	  "filter" : ["lowercase"],
+	  "char_filter" : ["html_strip"],
+	  "text" : "this is a <b>test</b>"
+	}
 
