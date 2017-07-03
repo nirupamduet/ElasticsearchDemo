@@ -26,7 +26,7 @@ https://www.youtube.com/watch?v=60UsHHsKyN4
 	creating an index. Allows to scale horizontally by content volumne (index space). Allows to distribute and parallelize operations across shards, which increases performance.
 11) Replicas: is a copy of a shard. Provides high availability in case a shard or node fails. A replica never resides on the same node as the original shard. Allows
 	scaling search volume, because search queries can be executed on all replicas in parallel. By default, Elasticsearch adds 5 primary shards and 1 replica for each index.
-12) Look into Sense which is a web plugin that helps issue Elasticsearch REST requests. https://www.found.no/foundation/Sense-Elasticsearch-interface﻿
+12) Look into Sense which is a web plugin that helps issue Elasticsearch REST requests. This is part of Kibana now in newer versions (Dev Tools)
 13) Look into Kibana which looks like a web plugin that helps you view details of your index, document, etc. Helps you do quick searches into documents
 14) Elasticsearch doesn't have an array type, when adding a mapping, even if you know it's an array you specify as normal field. Elasticsearch will automatically store
 	data as "array" when sent in.

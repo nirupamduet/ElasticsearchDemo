@@ -1,0 +1,7 @@
+01) Install Java, https://java.com/en/download/win10.jsp
+02) SET JAVA_HOME environment system variable (System > Advanced System Settings), C:\Program Files (x86)\Java\jre1.8.0_131
+03) SET _JAVA_OPTIONS environment system variable, -Xmx512M -Xms256M
+04) Download Elasticsearch, https://www.elastic.co/start
+05) Command into Elasticsearch bin directory and run elasticsearch.bat to start server (localhost:9200)
+06) Download Kibana
+07) Command into Kibana bin directory and run kibana.bat (localhost:5601)

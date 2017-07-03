@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApp", "DemoApp\DemoApp.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{03D32F18-6AE2-4A28-98A5-BFC62B9DB3C9}"
 	ProjectSection(SolutionItems) = preProject
+		Install.txt = Install.txt
+		PluralSightReadMe.txt = PluralSightReadMe.txt
 		ReadMe.txt = ReadMe.txt
 	EndProjectSection
 EndProject
