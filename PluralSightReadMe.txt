@@ -240,4 +240,4 @@
 	  "char_filter" : ["html_strip"],
 	  "text" : "this is a <b>test</b>"
 	}
-
+21) Elasticsearch NEST: Now incorporated into Elasticsearch, good mix of .NET and Elasticsearch conventions, Nearly 100% Elasticsearch API support

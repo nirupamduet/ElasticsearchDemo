@@ -5,3 +5,4 @@
 05) Command into Elasticsearch bin directory and run elasticsearch.bat to start server (localhost:9200)
 06) Download Kibana
 07) Command into Kibana bin directory and run kibana.bat (localhost:5601)
+08) Install Nest, go to package manager console in VS and type: Install-Package Nest
