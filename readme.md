@@ -43,7 +43,7 @@
            "match_all": {}
        }
    }
-
+```
 
 ## Get restaurants matching tacos in all fields:
 
